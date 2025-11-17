@@ -30,12 +30,20 @@ def manual_convolve(image, kernel):
     ksize = kernel.shape[0]
     pad = ksize // 2
     padded = np.pad(image, pad, mode='reflect')
-    output = np.zeros_like(image)
+    output = np.zeros_like(image, dtype=np.float32)
+    h, w = image.shape
 
-    for y in range(image.shape[0]):
-        for x in range(image.shape[1]):
-            region = padded[y:y+ksize, x:x+ksize]
-            output[y, x] = np.sum(region * kernel)
+    # Multiplicación manual elemento a elemento para cada ventana
+    for y in range(h):
+        for x in range(w):
+            s = 0.0
+            # recorrer kernel manualmente y multiplicar por el pixel correspondiente
+            for ky in range(ksize):
+                py = y + ky
+                for kx in range(ksize):
+                    px = x + kx
+                    s += float(padded[py, px]) * float(kernel[ky, kx])
+            output[y, x] = s
     return output
 
 # Tamaños de kernel
